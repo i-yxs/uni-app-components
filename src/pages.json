@@ -1,0 +1,28 @@
+{
+	"pages": [
+		{
+			"path": "pages/index",
+			"style": {
+				"navigationBarTitleText": "组件列表"
+			}
+		},
+		{
+			"path": "pages/popup-layer/index",
+			"style": {
+				"navigationBarTitleText": "弹出层"
+			}
+		},
+		{
+			"path": "pages/image-upload/index",
+			"style": {
+				"navigationBarTitleText": "图片上传"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}
