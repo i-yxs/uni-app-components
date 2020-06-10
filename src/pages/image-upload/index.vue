@@ -121,7 +121,8 @@ export default {
             ],
             config: {
                 baseUrl: "https://api.shunone.com/api/file/thumbImage/",
-                pathKey: "fileId"
+                pathKey: "fileId",
+                maxCount: 1
             },
             //上传图片配置
             config1: {
@@ -135,7 +136,7 @@ export default {
                 baseUrl: "https://api.shunone.com/api/file/thumbImage/",
                 pathKey: "fileId",
                 isDelete: false,
-                uploadCount: 0
+                maxCount: 0
             }
         };
     },
@@ -159,7 +160,7 @@ export default {
                 context2d.arcTo(0, 0, w, 0, r);
                 context2d.closePath();
             };
-            roundRect(width, height, 20);
+            roundRect(width, height, width / 2);
             context2d.clip();
         },
         /**

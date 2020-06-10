@@ -46,7 +46,7 @@
                     ></view>
                 </view>
             </view>
-            <view class="preview-item" v-if="!isMaxUploadCount">
+            <view class="preview-item" v-if="!isMaxmaxCount">
                 <view
                     :class="['action-button', size, {round: round, circle: circle}]"
                     @click="handleChooseButton"
@@ -74,7 +74,7 @@
 <script>
 /**
  * image-upload 图片上传
- * @description 该图片上传相比于其他同类组件多了处理进度显示、图片上传、图片处理（开发者可以在图片处理前、后操作canvas，可以实现诸如图片裁剪、添加水印等等功能）
+ * @description 该组件相比于其他同类组件多了处理进度显示、图片上传、图片处理（开发者可以在图片处理前、后操作canvas，可以实现诸如图片裁剪、添加水印等等功能）
  * @property    {Array}     image       网络图片的列表，由父组件指定，仅能进行删除操作，推荐配合.sync修饰符使用
  * @property    {Array}     upload      上传列表，用于把上传列表传递给父组件，推荐配合.sync修饰符使用
  * @property    {String}    size        指定组件显示的尺寸
@@ -85,17 +85,17 @@
  * @property    {Boolean}   round       是否圆角
  * @property    {Boolean}   circle      是否圆形
  * @property    {Object}    config      配置选项
- *  @value String   format          指定导出图片的格式，默认为原图片格式
  *  @value Number   quality         指定导出图片的质量
  *  @value Number   maxSize         指定该属性会将图片等比压缩至该值以下
- *  @value Number   timeout         处理超时时间
+ *  @value Number   timeout         处理超时时间，上传超时时间需要在manifest.json配置
+ *  @value Number   fileType        指定导出图片的格式，默认png
+ *  @value Number   maxCount        最大选择数量
  *  @value Boolean  isDelete        是否显示删除按钮
  *  @value String   sourceType      指定选择图片方式
  *      @value String   album       从相册选择
  *      @value String   camera      使用相机拍照
  *  @value String   uploadUrl       上传服务器的url
  *  @value String   uploadName      上传服务器的name
- *  @value Number   uploadCount     最大上传数量
  *
  *  只有设置了image的值时，才会生效的配置
  *
@@ -113,12 +113,12 @@ const DefaultConfig = {
     quality: 1,
     maxSize: 1000,
     timeout: 10000,
+    fileType: "png",
     isDelete: true,
     sourceType: "",
     uploadUrl: "",
     uploadName: "",
-    uploadCount: 9,
-    exportFormat: "",
+    maxCount: 9,
     urlKey: "",
     pathKey: "path",
     thumbKey: "thumb",
@@ -196,8 +196,8 @@ export default {
             return Object.assign({}, DefaultConfig, this.config);
         },
         //是否达到最大上传图片张数
-        isMaxUploadCount() {
-            return this.imageCount >= this.currentConfig.uploadCount;
+        isMaxmaxCount() {
+            return this.imageCount >= this.currentConfig.maxCount;
         }
     },
     mounted() {
@@ -299,11 +299,11 @@ export default {
                             this.canvasHeight = height;
 
                             setTimeout(() => {
+                                this.context2d.save();
                                 /**
                                  * 抛出drawbefore事件，用户可以自行绘制内容
                                  * 比如可以利用clip限制绘制区域
                                  */
-                                this.context2d.save();
                                 this.$emit("drawbefore", {
                                     dpr: this.dpr,
                                     width: width,
@@ -342,7 +342,7 @@ export default {
                                      * 解决低配置安卓手机create bitmap failed错误
                                      */
                                     setTimeout(() => {
-                                        this.exportImage(imageInfo.fileType)
+                                        this.exportImage()
                                             .then(res => {
                                                 resolve(res);
                                             })
@@ -406,7 +406,7 @@ export default {
                                     clearTimeout(timer);
 
                                     setTimeout(() => {
-                                        this.exportImage(imageInfo.fileType)
+                                        this.exportImage()
                                             .then(res => {
                                                 resolve(res);
                                             })
@@ -424,7 +424,7 @@ export default {
             });
         },
         //导出图片
-        exportImage(fileType) {
+        exportImage() {
             return new Promise((resolve, reject) => {
                 let timer = this.handleTimeout(reject);
                 uni.canvasToTempFilePath(
@@ -432,7 +432,7 @@ export default {
                         x: 0,
                         y: 0,
                         quality: this.currentConfig.quality,
-                        fileType: fileType,
+                        fileType: this.currentConfig.fileType,
                         canvasId: this.canvasId,
                         success(res) {
                             resolve(res.tempFilePath);
@@ -532,7 +532,7 @@ export default {
         },
         //根据指定方式获取图片
         handleChooseImage(type) {
-            let count = this.currentConfig.uploadCount - this.imageCount;
+            let count = this.currentConfig.maxCount - this.imageCount;
             let sourceType = [type || this.currentConfig.sourceType];
             uni.chooseImage({
                 count,
