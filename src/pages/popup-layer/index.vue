@@ -1,19 +1,19 @@
 <template>
     <view class="content">
         <popup-layer :visible="visible1" direction="top" @masktap="visible1 = false">
-            <view class="top" v-if="direction === 'top'"></view>
+            <view class="top"></view>
         </popup-layer>
         <popup-layer :visible="visible2" direction="bottom" @masktap="visible2 = false">
-            <view class="bottom" v-if="direction === 'bottom'"></view>
+            <view class="bottom"></view>
         </popup-layer>
         <popup-layer :visible="visible3" direction="left" @masktap="visible3 = false">
-            <view class="left" v-if="direction === 'left'"></view>
+            <view class="left"></view>
         </popup-layer>
         <popup-layer :visible="visible4" direction="right" @masktap="visible4 = false">
-            <view class="right" v-if="direction === 'right'"></view>
+            <view class="right"></view>
         </popup-layer>
         <popup-layer :visible="visible5" direction="center" @masktap="visible5 = false">
-            <view class="center" v-if="direction === 'center'"></view>
+            <view class="center"></view>
         </popup-layer>
         <button type="primary" @click="visible1 = true">顶部</button>
         <button type="primary" @click="visible2 = true">底部</button>
@@ -45,7 +45,7 @@ export default {
     onUnload() {}
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .top {
     background: #fff;
     width: 100vw;

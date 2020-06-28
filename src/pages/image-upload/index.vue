@@ -122,7 +122,7 @@ export default {
             config: {
                 baseUrl: "https://api.shunone.com/api/file/thumbImage/",
                 pathKey: "fileId",
-                maxCount: 1
+                maxCount: 2
             },
             //上传图片配置
             config1: {
@@ -185,7 +185,7 @@ export default {
             }
         },
         /**
-         * 提交处理
+         * 提交验证
          */
         handleSubmit() {
             let errorMsg = "";
@@ -236,11 +236,13 @@ export default {
         }
     },
     onShow() {},
-    onLoad(param) {},
+    onLoad(param) {
+        
+    },
     onUnload() {}
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .title {
     font-size: 26rpx;
     padding: 30rpx 0;

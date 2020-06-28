@@ -54,10 +54,18 @@
             </view>
         </view>
         <view class="image-upload-canvas">
+            <!-- #ifdef MP-WEIXIN -->
             <canvas
                 canvas-id="ImageUploadCanvas"
                 :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
             ></canvas>
+            <!-- #endif -->
+            <!-- #ifndef MP-WEIXIN -->
+            <canvas
+                :canvas-id="canvasId"
+                :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
+            ></canvas>
+            <!-- #endif -->
         </view>
         <popup-layer direction="bottom" :visible="isPopupVisible" @masktap="isPopupVisible = false">
             <view class="source-type-select">
@@ -108,6 +116,11 @@
  * @event       {Function}  drawafter       绘制图片后触发事件
  */
 import popupLayer from "@/components/popup-layer/popup-layer";
+
+// #ifdef H5
+import EXIF from "./EXIF";
+// #endif
+
 //默认配置
 const DefaultConfig = {
     quality: 1,
@@ -155,7 +168,12 @@ export default {
     },
     data() {
         return {
+            // #ifdef MP-WEIXIN
             canvasId: "ImageUploadCanvas", //canvas的Id
+            // #endif
+            // #ifndef MP-WEIXIN
+            canvasId: `ImageUploadCanvas${Date.now()}`, //canvas的Id
+            // #endif
             canvasWidth: 0, //canvas的宽度
             canvasHeight: 0, //canvas的高度
             isPopupVisible: false, //用于表示source-type弹出层的显示状态
@@ -312,6 +330,56 @@ export default {
                                     source: imageData.source,
                                     context2d: this.context2d
                                 });
+                                /**
+                                 * H5端拍照照片会有方向的问题，这里使用EXIF.js获取方向
+                                 * 然后修正照片的方向
+                                 */
+                                // #ifdef H5
+                                let x = 0,
+                                    y = 0;
+                                this.context2d.save();
+                                if (imageData.source === "camera") {
+                                    let orientation =
+                                        EXIF.getTag(this, "Orientation") || 3;
+                                    // 根据旋转角度，对图片进行旋转
+                                    switch (orientation) {
+                                        case 3:
+                                            // 旋转180°
+                                            [x, y] = [-width, -height];
+                                            this.context2d.rotate(
+                                                (180 * Math.PI) / 180
+                                            );
+                                            break;
+                                        case 6:
+                                            // 旋转90°
+                                            [x, y] = [0, -height];
+                                            [width, height] = [height, width];
+                                            this.context2d.rotate(
+                                                (90 * Math.PI) / 180
+                                            );
+                                            break;
+                                        case 8:
+                                            // 旋转-90°
+                                            [x, y] = [-width, 0];
+                                            [width, height] = [height, width];
+                                            this.context2d.rotate(
+                                                (-90 * Math.PI) / 180
+                                            );
+                                            break;
+                                    }
+                                }
+                                this.canvasWidth = width;
+                                this.canvasHeight = height;
+                                this.context2d.drawImage(
+                                    imageData.original,
+                                    x,
+                                    y,
+                                    width,
+                                    height
+                                );
+                                this.context2d.restore();
+                                // #endif
+                                // #ifndef H5
                                 this.context2d.drawImage(
                                     imageData.original,
                                     0,
@@ -319,6 +387,8 @@ export default {
                                     width,
                                     height
                                 );
+                                // #endif
+                                this.context2d.restore();
                                 /**
                                  * 抛出drawafter事件，用户可以自行绘制内容
                                  * 比如可以在图片上绘制水印
@@ -538,20 +608,22 @@ export default {
                 count,
                 sourceType,
                 success: res => {
-                    let files = Array.prototype.slice
-                        .apply(res.tempFiles)
-                        .map(item => {
-                            let data = {
-                                path: "", //待上传的图片url
-                                thumb: "", //缩略图
-                                original: item.path, //原始图片
-                                source: type, //获取图片的方式
-                                progress: 0, //处理进度
-                                dataModel: null //服务器返回的数据
-                            };
-                            this.joinQueues(data);
-                            return data;
-                        });
+                    let files = Array.prototype.slice.apply(res.tempFiles);
+                    if (files.length > this.currentConfig.maxCount) {
+                        files.length = this.currentConfig.maxCount;
+                    }
+                    files = files.map(item => {
+                        let data = {
+                            path: "", //待上传的图片url
+                            thumb: "", //缩略图
+                            original: item.path, //原始图片
+                            source: type, //获取图片的方式
+                            progress: 0, //处理进度
+                            dataModel: null //服务器返回的数据
+                        };
+                        this.joinQueues(data);
+                        return data;
+                    });
                     this.uploadList = this.uploadList.concat(files);
                     this.updateUpload();
                 }

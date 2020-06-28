@@ -17,6 +17,12 @@
 			"style": {
 				"navigationBarTitleText": "图片上传"
 			}
+		},
+		{
+			"path": "pages/gesture-view/index",
+			"style": {
+				"navigationBarTitleText": "手势事件"
+			}
 		}
 	],
 	"globalStyle": {

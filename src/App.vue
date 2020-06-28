@@ -13,11 +13,4 @@ export default {
 </script>
 
 <style>
-/*每个页面公共css */
-.content {
-    padding: 40rpx;
-}
-button {
-    margin-top: 40rpx;
-}
 </style>

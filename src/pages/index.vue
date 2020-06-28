@@ -1,5 +1,5 @@
 <template>
-    <view>
+    <view class="content">
         <uni-section title="视图组件" type="line"></uni-section>
         <uni-list>
             <uni-list-item
@@ -34,6 +34,10 @@ export default {
                 {
                     name: "弹出层",
                     url: "popup-layer"
+                },
+                {
+                    name: "手势事件",
+                    url: "gesture-view"
                 }
             ],
             form: [
@@ -58,8 +62,8 @@ export default {
     onUnload() {}
 };
 </script>
-<style>
-page {
-    height: 100%;
+<style lang="scss" scoped>
+.content{
+    background: #efeff4;
 }
 </style>

@@ -1,12 +1,18 @@
 <template>
-    <view @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd" @touchcancel="handleTouchEnd">
+    <view
+        class="gesture-view"
+        @touchstart.stop="handleTouchStart"
+        @touchmove.stop="handleTouchMove"
+        @touchend.stop="handleTouchEnd"
+        @touchcancel.stop="handleTouchEnd"
+    >
         <slot></slot>
     </view>
 </template>
 <script>
 /**
  * gesture-view 手势事件组件
- * @description 用于
+ * @description
  * @event       {Function}      doubletap      双击屏幕
  * @event       {Function}      dragstart      拖拽开始
  * @event       {Function}      drag           拖拽中
@@ -20,10 +26,16 @@
  * @event       {Function}      swiperight     向右滑动
  * @event       {Function}      hold           长按事件
  */
+
+import doubletap from "./doubletap";
+
 export default {
-    props: {},
+    props: {
+        
+    },
     methods: {
         handleTouchStart(res) {
+            console.log(res);
             this.downPointX = res.changedTouches[0].clientX;
             this.downPointY = res.changedTouches[0].clientY;
             this.downTimestamp = Date.now();
