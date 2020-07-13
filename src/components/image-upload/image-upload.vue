@@ -340,7 +340,7 @@ export default {
                                 this.context2d.save();
                                 if (imageData.source === "camera") {
                                     let orientation =
-                                        EXIF.getTag(this, "Orientation") || 3;
+                                        EXIF.getTag(this, "Orientation");
                                     // 根据旋转角度，对图片进行旋转
                                     switch (orientation) {
                                         case 3:
