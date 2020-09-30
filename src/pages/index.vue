@@ -34,10 +34,6 @@ export default {
                 {
                     name: "弹出层",
                     url: "popup-layer"
-                },
-                {
-                    name: "手势事件",
-                    url: "gesture-view"
                 }
             ],
             form: [
